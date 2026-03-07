@@ -2,12 +2,8 @@
 
 import { AppLayout } from "@/components/app-layout"
 import { PageContainer, SectionHeader, StatusBadge, ProgressBar } from "@/components/shared"
-import { finishingData, hourlyFinishingTable } from "@/lib/data"
+import { finishingData } from "@/lib/data"
 import { Shirt, Package, CheckCircle2, Clock } from "lucide-react"
-import { cn } from "@/lib/utils"
-
-const HOURS = ["8–9AM", "9–10AM", "10–11AM", "11–12PM", "12–1PM", "1–2PM", "2–3PM", "3–4PM", "4–5PM", "5–6PM", "6–7PM"]
-const PENDING_IDX = [9, 10]
 
 export default function FinishingPage() {
   const totalReceived = finishingData.reduce((s, f) => s + f.received, 0)
@@ -33,45 +29,6 @@ export default function FinishingPage() {
               </div>
             </div>
           ))}
-        </div>
-
-        {/* Hourly Output Table — Finishing lines */}
-        <div className="bg-card border border-border rounded-xl p-5 mb-5">
-          <SectionHeader title="Finishing Lines — Hourly Output" subtitle="08:00 AM – 07:00 PM (10 hr shift) · Last 2 hrs pending" />
-          <div className="overflow-x-auto">
-            <table className="w-full text-xs">
-              <thead>
-                <tr className="border-b border-border bg-muted/20 text-muted-foreground">
-                  <th className="text-left font-medium px-3 py-2 w-16">Line</th>
-                  <th className="text-left font-medium px-3 py-2">Style</th>
-                  {HOURS.map((h, i) => (
-                    <th key={h} className={cn("text-center font-medium px-2 py-2 whitespace-nowrap", PENDING_IDX.includes(i) && "text-muted-foreground/50")}>
-                      {h}
-                    </th>
-                  ))}
-                  <th className="text-center font-medium px-3 py-2">Total</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border">
-                {hourlyFinishingTable.map((row) => {
-                  const vals = [row.h1,row.h2,row.h3,row.h4,row.h5,row.h6,row.h7,row.h8,row.h9,row.h10,row.h11]
-                  const total = vals.reduce((s, v) => s + (v ?? 0), 0)
-                  return (
-                    <tr key={row.line} className="hover:bg-muted/30 transition-colors">
-                      <td className="px-3 py-2.5 font-bold text-foreground">{row.line}</td>
-                      <td className="px-3 py-2.5 text-muted-foreground truncate max-w-[100px]">{row.style}</td>
-                      {vals.map((v, i) => (
-                        <td key={i} className={cn("px-2 py-2.5 text-center tabular-nums", PENDING_IDX.includes(i) ? "text-muted-foreground/40" : "text-foreground")}>
-                          {v === null ? <span className="text-muted-foreground/30">—</span> : v}
-                        </td>
-                      ))}
-                      <td className="px-3 py-2.5 text-center font-semibold text-foreground">{total}</td>
-                    </tr>
-                  )
-                })}
-              </tbody>
-            </table>
-          </div>
         </div>
 
         <div className="bg-card border border-border rounded-xl p-5">
