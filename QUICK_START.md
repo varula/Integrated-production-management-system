@@ -14,7 +14,7 @@ A **production management system for apparel/denim factories** with:
 
 ### 1. **Factory Switcher**
 Top-left dropdown → switch between 4 factories instantly
-- Color-coded avatars: AA=green, ZA=blue, DE=purple, DT=amber
+- Color-coded avatars: AA=green, ZA=blue, DM=purple, DT=amber
 - Factory name, address, and "Live" clock update automatically
 
 ### 2. **Dashboard** (/)
@@ -74,7 +74,7 @@ Real-time Charts & Tables
 ### Factories (4)
 - Armana Apparels / Fashions Ltd (AA) — Tejgaon Industrial Area, Dhaka
 - Zyta Apparels Ltd (ZA) — Mirpur, Dhaka
-- Denimach Ltd (DE) — Sreepur, Gazipur
+- Denimach Ltd (DM) — Sreepur, Gazipur
 - Denitex Ltd (DT) — Savar, Dhaka
 
 ### Lines per Factory (16 total)

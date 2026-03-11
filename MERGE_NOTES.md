@@ -19,7 +19,7 @@ This is a **unified apparel production management system** created by merging tw
 - **Factory Switcher**: Dropdown to switch between all 4 factories instantly
 - **Live Clock**: Real-time HH:MM:SS display with "Live" indicator
 - **Factory Header**: Shows factory name, address, and "Integrated Production Management System"
-- **User Avatar**: Changes color per factory (AA=green, ZA=blue, DE=purple, DT=amber)
+- **User Avatar**: Changes color per factory (AA=green, ZA=blue, DM=purple, DT=amber)
 
 ### 3. **Advanced KPI Engine**
 Integrated 15+ metrics from lovable project:
