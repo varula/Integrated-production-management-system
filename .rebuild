@@ -1,0 +1,2 @@
+// Force rebuild - timestamp: {timestamp}
+export const REBUILD_MARKER = '{buildtime}'
