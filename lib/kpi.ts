@@ -3,6 +3,10 @@
  * Calculates all production metrics from raw data
  */
 
+// ============================================================================
+// INTERFACES
+// ============================================================================
+
 export interface ProductionMetrics {
   totalProduced: number
   totalPassed: number
@@ -41,6 +45,10 @@ export interface FactoryMetrics extends ProductionMetrics {
   }>
 }
 
+// ============================================================================
+// MAIN KPI CALCULATION FUNCTION
+// ============================================================================
+
 /**
  * Calculate all KPIs from production data
  * Main composite function used by pages
@@ -56,9 +64,10 @@ export function calculateKPIs(data: {
   const totalDefect = data.hourlyData?.reduce((sum, h) => sum + (h.defect_qty || 0), 0) || 0
 
   // Average efficiency across all lines
-  const avgEfficiency = data.lines?.length > 0 
-    ? data.lines.reduce((sum, l) => sum + (l.efficiency || 0), 0) / data.lines.length 
-    : 0
+  const avgEfficiency =
+    data.lines?.length > 0
+      ? data.lines.reduce((sum, l) => sum + (l.efficiency || 0), 0) / data.lines.length
+      : 0
 
   return {
     factoryName: 'Factory',
@@ -77,6 +86,9 @@ export function calculateKPIs(data: {
   }
 }
 
+// ============================================================================
+// METRIC CALCULATION FUNCTIONS
+// ============================================================================
 
 /**
  * Calculate DHU (Defects per Hundred Units)
@@ -89,177 +101,79 @@ export function calculateDHU(defectQty: number, producedQty: number): number {
 /**
  * Calculate RFT (Right First Time %)
  */
-export function calculateRFT(passed: number, produced: number): number {
-  if (produced === 0) return 100
-  return (passed / produced) * 100
+export function calculateRFT(passedQty: number, producedQty: number): number {
+  if (producedQty === 0) return 100
+  return (passedQty / producedQty) * 100
 }
 
 /**
- * Calculate Line Efficiency (%)
- * Efficiency = (Actual Output / Target Output) * 100
+ * Calculate line efficiency (%)
  */
-export function calculateEfficiency(
-  produced: number,
-  capacityPerHour: number,
-  hoursWorked: number
+export function calculateLineEfficiency(
+  actualProduced: number,
+  capacity: number,
+  durationHours: number = 1
 ): number {
-  const targetOutput = capacityPerHour * hoursWorked
-  if (targetOutput === 0) return 0
-  return (produced / targetOutput) * 100
+  const expectedOutput = capacity * durationHours
+  if (expectedOutput === 0) return 0
+  return (actualProduced / expectedOutput) * 100
 }
 
 /**
- * Calculate Line Utilization (%)
- * Based on downtime
+ * Calculate hourly defect rate (%)
  */
-export function calculateLineUtilization(downtimeMinutes: number): number {
-  const totalMinutes = 10 * 60 // 10 hour shift
-  if (totalMinutes === 0) return 100
-  return Math.max(0, ((totalMinutes - downtimeMinutes) / totalMinutes) * 100)
+export function calculateDefectRate(defectQty: number, producedQty: number): number {
+  if (producedQty === 0) return 0
+  return (defectQty / producedQty) * 100
 }
 
 /**
- * Calculate Cost per SAM
- * SAM = Standard Allowed Minutes per unit
- * Assumes 1.5 SAM per unit for denim pants
+ * Calculate production target achievement (%)
  */
-export function calculateCostPerSAM(
-  totalCost: number,
-  producedQty: number,
-  samPerUnit: number = 1.5
-): number {
-  const totalSAM = producedQty * samPerUnit
+export function calculateTargetAchievement(actual: number, target: number): number {
+  if (target === 0) return 0
+  return (actual / target) * 100
+}
+
+/**
+ * Calculate cost per SAM (Standard Allowed Minutes)
+ */
+export function calculateCostPerSAM(totalCost: number, totalSAM: number): number {
   if (totalSAM === 0) return 0
   return totalCost / totalSAM
 }
 
 /**
- * Calculate Target Achievement (%)
- * Achievement = (Actual Qty / Planned Qty) * 100
+ * Calculate line utilization (%)
  */
-export function calculateTargetAchievement(
-  actualQty: number,
-  plannedQty: number
+export function calculateLineUtilization(
+  operatingMinutes: number,
+  totalAvailableMinutes: number
 ): number {
-  if (plannedQty === 0) return 0
-  return (actualQty / plannedQty) * 100
+  if (totalAvailableMinutes === 0) return 0
+  return (operatingMinutes / totalAvailableMinutes) * 100
 }
 
 /**
- * Aggregate metrics from hourly data
+ * Calculate OEE (Overall Equipment Effectiveness)
+ * OEE = Availability × Performance × Quality
  */
-export function aggregateHourlyData(hourlyData: HourlyData[]): {
-  totalProduced: number
-  totalPassed: number
-  totalDefect: number
-  completedHours: number
-} {
-  let totalProduced = 0
-  let totalPassed = 0
-  let totalDefect = 0
-  let completedHours = 0
-
-  hourlyData.forEach((h) => {
-    if (h.produced !== null) {
-      totalProduced += h.produced
-      totalPassed += h.passed || 0
-      totalDefect += h.defect || 0
-      completedHours++
-    }
-  })
-
-  return {
-    totalProduced,
-    totalPassed,
-    totalDefect,
-    completedHours,
-  }
+export function calculateOEE(
+  availability: number, // 0-100
+  performance: number, // 0-100
+  quality: number // 0-100
+): number {
+  return (availability / 100) * (performance / 100) * (quality / 100) * 100
 }
 
 /**
- * Calculate all metrics for a line
+ * Get defect distribution by type
  */
-export function calculateLineMetrics(
-  lineCode: string,
-  lineName: string,
-  lineLeader: string,
-  capacityPerHour: number,
-  hourlyData: HourlyData[],
-  downtimeMinutes: number,
-  plannedQty: number
-): LineMetrics {
-  const { totalProduced, totalPassed, totalDefect, completedHours } =
-    aggregateHourlyData(hourlyData)
-
-  const efficiency = calculateEfficiency(totalProduced, capacityPerHour, completedHours || 1)
-  const dhu = calculateDHU(totalDefect, totalProduced)
-  const rft = calculateRFT(totalPassed, totalProduced)
-  const lineUtilization = calculateLineUtilization(downtimeMinutes)
-  const targetAchievement = calculateTargetAchievement(totalProduced, plannedQty)
-
-  return {
-    lineCode,
-    lineName,
-    lineLeader,
-    totalProduced,
-    totalPassed,
-    totalDefect,
-    efficiency,
-    dhu,
-    rft,
-    costPerSAM: 0, // Would need cost data
-    lineUtilization,
-    targetAchievement,
-    downtimeMinutes,
-  }
-}
-
-/**
- * Calculate all metrics for a factory
- */
-export function calculateFactoryMetrics(
-  factoryName: string,
-  factoryCode: string,
-  lineMetrics: LineMetrics[],
-  downtime: Array<{ lineCode: string; reason: string; durationMinutes: number }>
-): FactoryMetrics {
-  const totalProduced = lineMetrics.reduce((sum, l) => sum + l.totalProduced, 0)
-  const totalPassed = lineMetrics.reduce((sum, l) => sum + l.totalPassed, 0)
-  const totalDefect = lineMetrics.reduce((sum, l) => sum + l.totalDefect, 0)
-  const totalDowntime = lineMetrics.reduce((sum, l) => sum + l.downtimeMinutes, 0)
-
-  const avgEfficiency = lineMetrics.length > 0 
-    ? lineMetrics.reduce((sum, l) => sum + l.efficiency, 0) / lineMetrics.length 
-    : 0
-
-  const avgLineUtilization = lineMetrics.length > 0
-    ? lineMetrics.reduce((sum, l) => sum + l.lineUtilization, 0) / lineMetrics.length
-    : 0
-
-  return {
-    factoryName,
-    factoryCode,
-    totalProduced,
-    totalPassed,
-    totalDefect,
-    efficiency: avgEfficiency,
-    dhu: calculateDHU(totalDefect, totalProduced),
-    rft: calculateRFT(totalPassed, totalProduced),
-    costPerSAM: 0,
-    lineUtilization: avgLineUtilization,
-    targetAchievement: 0,
-    downtimeMinutes: totalDowntime,
-    downtime,
-  }
-}
-
-/**
- * Get defect breakdown (for charts)
- */
-export function getDefectBreakdown(defects: Array<{ type: string; count: number }>) {
-  const total = defects.reduce((sum, d) => sum + d.count, 0)
-  return defects.map((d) => ({
-    ...d,
+export function getDefectDistribution(defectData: Array<{ type: string; count: number }>) {
+  const total = defectData.reduce((sum, d) => sum + d.count, 0)
+  return defectData.map((d) => ({
+    type: d.type,
+    count: d.count,
     percentage: total > 0 ? (d.count / total) * 100 : 0,
   }))
 }
@@ -267,25 +181,11 @@ export function getDefectBreakdown(defects: Array<{ type: string; count: number 
 /**
  * Get downtime breakdown by reason
  */
-export function getDowntimeBreakdown(downtime: Array<{ reason: string; durationMinutes: number }>) {
-  const grouped = downtime.reduce(
-    (acc, d) => {
-      const existing = acc.find((x) => x.reason === d.reason)
-      if (existing) {
-        existing.durationMinutes += d.durationMinutes
-      } else {
-        acc.push({ ...d })
-      }
-      return acc
-    },
-    [] as typeof downtime
-  )
-
-  const total = grouped.reduce((sum, d) => sum + d.durationMinutes, 0)
-  return grouped
-    .map((d) => ({
-      ...d,
-      percentage: total > 0 ? (d.durationMinutes / total) * 100 : 0,
-    }))
-    .sort((a, b) => b.durationMinutes - a.durationMinutes)
+export function getDowntimeBreakdown(downtimeData: Array<{ reason: string; minutes: number }>) {
+  const total = downtimeData.reduce((sum, d) => sum + d.minutes, 0)
+  return downtimeData.map((d) => ({
+    reason: d.reason,
+    minutes: d.minutes,
+    percentage: total > 0 ? (d.minutes / total) * 100 : 0,
+  }))
 }
