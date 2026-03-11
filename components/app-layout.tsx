@@ -1,10 +1,10 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
-import { factory } from "@/lib/data"
+import { useFactory } from "@/lib/factory-context"
 import {
   LayoutDashboard,
   ShoppingBag,
@@ -27,8 +27,15 @@ import {
   Factory,
   Shirt,
   ClipboardList,
+  ChevronDownCircle,
 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 const navItems = [
   {
@@ -210,6 +217,7 @@ function NavItem({ item, isOpen, onToggle, onClose }: NavItemProps) {
 
 export function Sidebar({ onClose }: { onClose?: () => void }) {
   const pathname = usePathname()
+  const { selectedFactory, factories, setSelectedFactory } = useFactory()
   const [openMenus, setOpenMenus] = useState<Record<string, boolean>>(() => {
     const initial: Record<string, boolean> = {}
     navItems.forEach((item) => {
@@ -233,17 +241,43 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
           <Factory size={20} className="text-white" />
         </div>
         <div className="min-w-0">
-          <p className="text-sidebar-foreground font-bold text-sm leading-tight truncate">SmartGarment</p>
-          <p className="text-sidebar-foreground/50 text-xs truncate">{factory.location}</p>
+          <p className="text-sidebar-foreground font-bold text-sm leading-tight truncate">AG</p>
+          <p className="text-sidebar-foreground/50 text-xs truncate">Armana Group</p>
         </div>
       </div>
 
-      {/* Factory badge */}
+      {/* Factory Switcher */}
       <div className="px-4 py-3 border-b border-sidebar-border">
-        <div className="flex items-center gap-2 px-3 py-2 rounded-md bg-sidebar-accent/60">
-          <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-          <p className="text-sidebar-foreground/80 text-xs truncate font-medium">{factory.name}</p>
-        </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button className="w-full flex items-center gap-2 px-3 py-2.5 rounded-md bg-sidebar-accent/60 hover:bg-sidebar-accent transition-colors group">
+              <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+              <div className="flex-1 text-left min-w-0">
+                <p className="text-sidebar-foreground/80 text-xs font-medium truncate">{selectedFactory?.code}</p>
+                <p className="text-sidebar-foreground/50 text-[10px] truncate">{selectedFactory?.name}</p>
+              </div>
+              <ChevronDownCircle size={14} className="shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" className="w-56">
+            {factories.map((factory) => (
+              <DropdownMenuItem
+                key={factory.id}
+                onClick={() => {
+                  setSelectedFactory(factory)
+                  onClose?.()
+                }}
+                className="flex items-center gap-2 cursor-pointer"
+              >
+                <div className={cn("w-2 h-2 rounded-full", factory.code === selectedFactory?.code ? "bg-green-400" : "bg-gray-300")} />
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-medium">{factory.code} - {factory.name}</p>
+                  <p className="text-[10px] text-muted-foreground">{factory.location}</p>
+                </div>
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       {/* Navigation */}
@@ -277,9 +311,38 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
   )
 }
 
+function LiveClock() {
+  const [time, setTime] = useState<string>("")
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+    const updateTime = () => {
+      const now = new Date()
+      setTime(now.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", second: "2-digit" }))
+    }
+    updateTime()
+    const interval = setInterval(updateTime, 1000)
+    return () => clearInterval(interval)
+  }, [])
+
+  if (!mounted) return <span className="text-xs text-muted-foreground">--:--:--</span>
+
+  return (
+    <div className="flex items-center gap-1.5">
+      <span className="text-xs tabular-nums text-foreground font-medium">{time}</span>
+      <span className="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-green-100 text-green-700 text-[10px] font-semibold animate-pulse">
+        <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
+        Live
+      </span>
+    </div>
+  )
+}
+
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const pathname = usePathname()
+  const { selectedFactory } = useFactory()
 
   const currentPage = navItems
     .flatMap((item) => (item.children ? item.children : [item]))
@@ -311,32 +374,40 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       {/* Main content */}
       <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
         {/* Top bar */}
-        <header className="shrink-0 h-14 border-b border-border bg-card flex items-center justify-between px-4 gap-4">
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => setSidebarOpen(true)}
-              className="lg:hidden p-1.5 rounded-md hover:bg-muted transition-colors"
-            >
-              <Menu size={20} />
-            </button>
-            <div>
-              <h1 className="text-sm font-semibold text-foreground">{currentPage?.label ?? "SmartGarment"}</h1>
-              <p className="text-xs text-muted-foreground hidden sm:block">{factory.shift} &bull; {factory.date}</p>
+        <header className="shrink-0 border-b border-border bg-card px-4 py-3 flex flex-col gap-2.5">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3 flex-1">
+              <button
+                onClick={() => setSidebarOpen(true)}
+                className="lg:hidden p-1.5 rounded-md hover:bg-muted transition-colors"
+              >
+                <Menu size={20} />
+              </button>
+              <div className="flex-1 min-w-0">
+                <h1 className="text-sm font-semibold text-foreground">{currentPage?.label ?? "SmartGarment"}</h1>
+                <p className="text-xs text-muted-foreground">{selectedFactory?.location}</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <LiveClock />
+              <button className="relative p-2 rounded-full hover:bg-muted transition-colors">
+                <Bell size={18} />
+                <span className="absolute top-1 right-1 w-2 h-2 bg-destructive rounded-full" />
+              </button>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <button className="relative p-2 rounded-full hover:bg-muted transition-colors">
-              <Bell size={18} />
-              <span className="absolute top-1 right-1 w-2 h-2 bg-destructive rounded-full" />
-            </button>
-            <div className="flex items-center gap-2 pl-2 border-l border-border">
-              <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-xs font-bold">
-                PM
-              </div>
-              <div className="hidden sm:block">
-                <p className="text-xs font-medium leading-tight">Production Mgr.</p>
-                <p className="text-xs text-muted-foreground leading-tight">Admin</p>
-              </div>
+
+          {/* Factory info bar */}
+          <div className="flex items-center gap-3 px-3 py-2 rounded-lg bg-muted/50 border border-border">
+            <div className={cn("w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white", selectedFactory?.userColor)}>
+              {selectedFactory?.code}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-medium text-foreground">{selectedFactory?.userFull}</p>
+              <p className="text-[10px] text-muted-foreground">Integrated Production Management System</p>
+            </div>
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-xs font-bold text-white">
+              {selectedFactory?.code?.charAt(0)}
             </div>
           </div>
         </header>
