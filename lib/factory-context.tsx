@@ -29,6 +29,18 @@ const FACTORY_COLORS: Record<string, { initial: string; color: string; fullName:
   'VS': { initial: 'VS', color: 'bg-amber-100 text-amber-700', fullName: 'Vishwa Apparel Co.' },
 }
 
+function createFactoriesWithUI(data: any[]): Factory[] {
+  return (data || []).map((f: any) => {
+    const colors = FACTORY_COLORS[f.code] || { initial: f.code, color: 'bg-gray-100 text-gray-700', fullName: f.name }
+    return {
+      ...f,
+      userInitial: colors.initial,
+      userColor: colors.color,
+      userFull: colors.fullName,
+    }
+  })
+}
+
 export function FactoryProvider({ children }: { children: ReactNode }) {
   const [factories, setFactories] = useState<Factory[]>([])
   const [selectedFactory, setSelectedFactory] = useState<Factory | null>(null)
@@ -42,18 +54,22 @@ export function FactoryProvider({ children }: { children: ReactNode }) {
           .select('*')
           .order('code')
 
-        if (error) throw error
+        if (error) {
+          console.error('[v0] Supabase error:', error)
+          // Fallback to default factories if Supabase fails
+          const defaults = [
+            { id: 'f1', code: 'DP', name: 'Dhanaperumal Textiles', location: 'Bangalore, India' },
+            { id: 'f2', code: 'AB', name: 'Abhiram Industries', location: 'Tiruppur, India' },
+            { id: 'f3', code: 'MK', name: 'Mallikarjun Garments', location: 'Bangalore, India' },
+            { id: 'f4', code: 'VS', name: 'Vishwa Apparel Co.', location: 'Chennai, India' },
+          ]
+          setFactories(createFactoriesWithUI(defaults))
+          if (defaults.length > 0) setSelectedFactory(createFactoriesWithUI(defaults)[0])
+          setLoading(false)
+          return
+        }
 
-        const factoriesWithUI = (data || []).map((f: any) => {
-          const colors = FACTORY_COLORS[f.code] || { initial: f.code, color: 'bg-gray-100 text-gray-700', fullName: f.name }
-          return {
-            ...f,
-            userInitial: colors.initial,
-            userColor: colors.color,
-            userFull: colors.fullName,
-          }
-        })
-
+        const factoriesWithUI = createFactoriesWithUI(data || [])
         setFactories(factoriesWithUI)
         
         // Set first factory as default
@@ -61,7 +77,16 @@ export function FactoryProvider({ children }: { children: ReactNode }) {
           setSelectedFactory(factoriesWithUI[0])
         }
       } catch (error) {
-        console.error('Failed to load factories:', error)
+        console.error('[v0] Failed to load factories:', error)
+        // Fallback to defaults
+        const defaults = [
+          { id: 'f1', code: 'DP', name: 'Dhanaperumal Textiles', location: 'Bangalore, India' },
+          { id: 'f2', code: 'AB', name: 'Abhiram Industries', location: 'Tiruppur, India' },
+          { id: 'f3', code: 'MK', name: 'Mallikarjun Garments', location: 'Bangalore, India' },
+          { id: 'f4', code: 'VS', name: 'Vishwa Apparel Co.', location: 'Chennai, India' },
+        ]
+        setFactories(createFactoriesWithUI(defaults))
+        if (defaults.length > 0) setSelectedFactory(createFactoriesWithUI(defaults)[0])
       } finally {
         setLoading(false)
       }

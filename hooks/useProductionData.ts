@@ -1,11 +1,34 @@
 import useSWR from 'swr'
 import { supabase } from '@/lib/supabase'
+import { useFactory } from '@/lib/factory-context'
 
 // Fetcher function for SWR
 async function fetcher(query: () => Promise<any>) {
   const result = await query()
   if (result.error) throw result.error
   return result.data
+}
+
+/**
+ * Composite hook that combines lines, production plans, and hourly data
+ * This is the main hook used by pages
+ */
+export function useProductionData() {
+  const { factory } = useFactory()
+  const factoryId = factory?.id
+
+  const { lines } = useLinesData(factoryId)
+  const { plans: productionPlans } = useProductionPlansData(factoryId)
+  const { production: hourlyData } = useTodayProductionByLine(factoryId)
+
+  const isLoading = !factoryId || !lines || !productionPlans || !hourlyData
+
+  return {
+    lines: lines || [],
+    productionPlans: productionPlans || [],
+    hourlyData: hourlyData || [],
+    isLoading,
+  }
 }
 
 export function useLinesData(factoryId: string | null | undefined) {
@@ -130,30 +153,3 @@ export function useAllLinesData(factoryId: string | null | undefined) {
   }
 }
 
-export function useTodayProductionByLine(factoryId: string | null | undefined) {
-  const today = new Date().toISOString().split('T')[0]
-  
-  const { data, error, isLoading, mutate } = useSWR(
-    factoryId ? ['today_production', factoryId] : null,
-    async () => {
-      const { data: production } = await supabase
-        .from('hourly_production')
-        .select(`
-          *,
-          lines:line_id(line_code, line_name, capacity_per_hour)
-        `)
-        .eq('factory_id', factoryId!)
-        .eq('date', today)
-
-      return production || []
-    },
-    { revalidateOnFocus: false }
-  )
-
-  return {
-    production: (data as any) || [],
-    error,
-    isLoading,
-    mutate,
-  }
-}
