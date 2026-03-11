@@ -78,26 +78,24 @@ export function useDowntimeData(factoryId: string | null | undefined) {
   return { downtime: data ?? [], error, isLoading, mutate }
 }
 
-// ─── Composite Hook (used by all pages) ────────────────────────────────────
+// ─── COMPOSITE HOOK - DEPRECATED (Pages should use individual hooks instead) ────
 
-export function useProductionData() {
-  const { factory } = useFactory()
-  const factoryId = factory?.id ?? null
-
-  const { lines, isLoading: ll } = useLinesData(factoryId)
-  const { plans: productionPlans, isLoading: pl } = useProductionPlansData(factoryId)
-  const { production: hourlyData, isLoading: hl } = useTodayProductionByLine(factoryId)
-  const { downtime, isLoading: dl } = useDowntimeData(factoryId)
-
-  return {
-    lines: lines ?? [],
-    productionPlans: productionPlans ?? [],
-    hourlyData: hourlyData ?? [],
-    downtime: downtime ?? [],
-    factory,
-    isLoading: !factoryId || ll || pl || hl || dl,
-  }
-}
+// export function useProductionData() {
+//   const { factory } = useFactory()
+//   const factoryId = factory?.id ?? null
+//   const { lines, isLoading: ll } = useLinesData(factoryId)
+//   const { plans: productionPlans, isLoading: pl } = useProductionPlansData(factoryId)
+//   const { production: hourlyData, isLoading: hl } = useTodayProductionByLine(factoryId)
+//   const { downtime, isLoading: dl } = useDowntimeData(factoryId)
+//   return {
+//     lines: lines ?? [],
+//     productionPlans: productionPlans ?? [],
+//     hourlyData: hourlyData ?? [],
+//     downtime: downtime ?? [],
+//     factory,
+//     isLoading: !factoryId || ll || pl || hl || dl,
+//   }
+// }
 
 // ─── CRUD helpers ──────────────────────────────────────────────────────────
 
