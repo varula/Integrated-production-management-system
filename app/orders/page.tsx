@@ -1,25 +1,39 @@
 "use client"
 
+import { useState } from "react"
 import { AppLayout } from "@/components/app-layout"
 import { PageContainer, SectionHeader, StatusBadge } from "@/components/shared"
-import { orders } from "@/lib/data"
-import { Search, Filter, Download, PlusCircle } from "lucide-react"
-import { useState } from "react"
+import { useProductionData } from "@/hooks/useProductionData"
+import { Search, Filter, PlusCircle } from "lucide-react"
 
 export default function OrdersPage() {
+  const { productionPlans, isLoading } = useProductionData()
   const [search, setSearch] = useState("")
-  const filtered = orders.filter(
-    (o) =>
-      o.id.toLowerCase().includes(search.toLowerCase()) ||
-      o.buyer.toLowerCase().includes(search.toLowerCase()) ||
-      o.style.toLowerCase().includes(search.toLowerCase())
-  )
+
+  const filtered = productionPlans?.filter(
+    (p: any) =>
+      p.order_id.toLowerCase().includes(search.toLowerCase()) ||
+      p.buyer_name.toLowerCase().includes(search.toLowerCase()) ||
+      p.style.toLowerCase().includes(search.toLowerCase())
+  ) || []
 
   const stats = {
-    total: orders.length,
-    inProd: orders.filter((o) => o.status === "In Production").length,
-    warning: orders.filter((o) => o.status === "Warning").length,
-    completed: orders.filter((o) => o.shipped > 0).length,
+    total: productionPlans?.length || 0,
+    inProd: productionPlans?.filter((p: any) => p.status === "IN_PROGRESS").length || 0,
+    notStarted: productionPlans?.filter((p: any) => p.status === "NOT_STARTED").length || 0,
+    completed: productionPlans?.filter((p: any) => p.status === "COMPLETED").length || 0,
+  }
+
+  if (isLoading) {
+    return (
+      <AppLayout>
+        <PageContainer>
+          <div className="flex items-center justify-center h-64">
+            <p className="text-muted-foreground">Loading orders...</p>
+          </div>
+        </PageContainer>
+      </AppLayout>
+    )
   }
 
   return (
@@ -30,8 +44,8 @@ export default function OrdersPage() {
           {[
             { label: "Total Orders", value: stats.total, color: "text-blue-600" },
             { label: "In Production", value: stats.inProd, color: "text-green-600" },
-            { label: "At Risk", value: stats.warning, color: "text-yellow-600" },
-            { label: "Partially Shipped", value: stats.completed, color: "text-purple-600" },
+            { label: "Not Started", value: stats.notStarted, color: "text-yellow-600" },
+            { label: "Completed", value: stats.completed, color: "text-purple-600" },
           ].map((s) => (
             <div key={s.label} className="bg-card border border-border rounded-xl p-4 text-center">
               <p className={`text-2xl font-bold ${s.color}`}>{s.value}</p>
@@ -66,28 +80,22 @@ export default function OrdersPage() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-border text-xs text-muted-foreground bg-muted/30">
-                  {["Order ID", "Buyer", "Style", "Color", "Size", "Total Qty", "Shipped", "Balance", "Ship Date", "Line", "Priority", "Status"].map((h) => (
+                  {["Order ID", "Buyer", "Style", "Color", "Size", "Planned Qty", "Target Date", "Status"].map((h) => (
                     <th key={h} className="text-left font-medium px-3 py-2.5 whitespace-nowrap">{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
-                {filtered.map((o) => (
-                  <tr key={o.id} className="hover:bg-muted/40 transition-colors">
-                    <td className="px-3 py-3 font-semibold text-primary text-xs whitespace-nowrap">{o.id}</td>
-                    <td className="px-3 py-3 text-xs font-medium whitespace-nowrap">{o.buyer}</td>
-                    <td className="px-3 py-3 text-xs whitespace-nowrap">{o.style}</td>
-                    <td className="px-3 py-3 text-xs text-muted-foreground whitespace-nowrap">{o.color}</td>
-                    <td className="px-3 py-3 text-xs text-muted-foreground">{o.size}</td>
-                    <td className="px-3 py-3 text-xs font-medium text-right whitespace-nowrap">{o.qty.toLocaleString()}</td>
-                    <td className="px-3 py-3 text-xs text-green-600 font-medium text-right whitespace-nowrap">{o.shipped.toLocaleString()}</td>
-                    <td className="px-3 py-3 text-xs text-orange-600 font-medium text-right whitespace-nowrap">{o.balance.toLocaleString()}</td>
-                    <td className="px-3 py-3 text-xs text-muted-foreground whitespace-nowrap">{o.shipDate}</td>
-                    <td className="px-3 py-3 text-xs font-medium whitespace-nowrap">{o.line}</td>
-                    <td className="px-3 py-3">
-                      <StatusBadge status={o.priority === "Low" ? "Low2" : o.priority === "Critical" ? "Critical2" : o.priority} size="sm" />
-                    </td>
-                    <td className="px-3 py-3"><StatusBadge status={o.status} size="sm" /></td>
+                {filtered.map((p: any) => (
+                  <tr key={p.id} className="hover:bg-muted/40 transition-colors">
+                    <td className="px-3 py-3 font-semibold text-primary text-xs whitespace-nowrap">{p.order_id}</td>
+                    <td className="px-3 py-3 text-xs font-medium whitespace-nowrap">{p.buyer_name}</td>
+                    <td className="px-3 py-3 text-xs whitespace-nowrap">{p.style}</td>
+                    <td className="px-3 py-3 text-xs text-muted-foreground whitespace-nowrap">{p.color}</td>
+                    <td className="px-3 py-3 text-xs text-muted-foreground">{p.size_range}</td>
+                    <td className="px-3 py-3 text-xs font-medium text-right whitespace-nowrap">{p.planned_qty.toLocaleString()}</td>
+                    <td className="px-3 py-3 text-xs text-muted-foreground whitespace-nowrap">{p.target_end_date?.slice(5)}</td>
+                    <td className="px-3 py-3"><StatusBadge status={p.status} size="sm" /></td>
                   </tr>
                 ))}
               </tbody>

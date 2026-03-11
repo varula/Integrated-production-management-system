@@ -64,10 +64,13 @@ const navItems = [
   },
   {
     label: "Sewing Lines",
-    href: "/sewing",
     icon: Cpu,
     badge: "2",
     badgeVariant: "destructive" as const,
+    children: [
+      { label: "Line Dashboard", href: "/sewing", icon: BarChart3 },
+      { label: "Hourly Entry", href: "/sewing/hourly-entry", icon: ClipboardList },
+    ],
   },
   {
     label: "Quality Control",
