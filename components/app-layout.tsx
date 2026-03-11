@@ -254,10 +254,12 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button className="w-full flex items-center gap-2 px-3 py-2.5 rounded-md bg-sidebar-accent/60 hover:bg-sidebar-accent transition-colors group">
-              <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
+              <div className={cn("w-7 h-7 rounded-full flex items-center justify-center text-[11px] font-bold text-white shrink-0", selectedFactory?.userColor)}>
+                {selectedFactory?.userInitial}
+              </div>
               <div className="flex-1 text-left min-w-0">
-                <p className="text-sidebar-foreground/80 text-xs font-medium truncate">{selectedFactory?.code}</p>
-                <p className="text-sidebar-foreground/50 text-[10px] truncate">{selectedFactory?.name}</p>
+                <p className="text-sidebar-foreground font-medium text-xs truncate">{selectedFactory?.userFull}</p>
+                <p className="text-sidebar-foreground/50 text-[9px] truncate">{selectedFactory?.location}</p>
               </div>
               <ChevronDownCircle size={14} className="shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
             </button>
@@ -274,7 +276,7 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
               >
                 <div className={cn("w-2 h-2 rounded-full", factory.code === selectedFactory?.code ? "bg-green-400" : "bg-gray-300")} />
                 <div className="flex-1 min-w-0">
-                  <p className="text-xs font-medium">{factory.code} - {factory.name}</p>
+                  <p className="text-xs font-medium">{factory.userFull}</p>
                   <p className="text-[10px] text-muted-foreground">{factory.location}</p>
                 </div>
               </DropdownMenuItem>
@@ -377,41 +379,25 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       {/* Main content */}
       <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
         {/* Top bar */}
-        <header className="shrink-0 border-b border-border bg-card px-4 py-3 flex flex-col gap-2.5">
-          <div className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-3 flex-1">
-              <button
-                onClick={() => setSidebarOpen(true)}
-                className="lg:hidden p-1.5 rounded-md hover:bg-muted transition-colors"
-              >
-                <Menu size={20} />
-              </button>
-              <div className="flex-1 min-w-0">
-                <h1 className="text-sm font-semibold text-foreground">{currentPage?.label ?? "SmartGarment"}</h1>
-                <p className="text-xs text-muted-foreground">{selectedFactory?.location}</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <LiveClock />
-              <button className="relative p-2 rounded-full hover:bg-muted transition-colors">
-                <Bell size={18} />
-                <span className="absolute top-1 right-1 w-2 h-2 bg-destructive rounded-full" />
-              </button>
+        <header className="shrink-0 border-b border-border bg-card px-4 py-3 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3 flex-1">
+            <button
+              onClick={() => setSidebarOpen(true)}
+              className="lg:hidden p-1.5 rounded-md hover:bg-muted transition-colors"
+            >
+              <Menu size={20} />
+            </button>
+            <div className="flex-1 min-w-0">
+              <h1 className="text-sm font-semibold text-foreground">{currentPage?.label ?? "SmartGarment"}</h1>
+              <p className="text-xs text-muted-foreground">{selectedFactory?.location}</p>
             </div>
           </div>
-
-          {/* Factory info bar */}
-          <div className="flex items-center gap-3 px-3 py-2 rounded-lg bg-muted/50 border border-border">
-            <div className={cn("w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white", selectedFactory?.userColor)}>
-              {selectedFactory?.code}
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-xs font-medium text-foreground">{selectedFactory?.userFull}</p>
-              <p className="text-[10px] text-muted-foreground">Integrated Production Management System</p>
-            </div>
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-xs font-bold text-white">
-              {selectedFactory?.code?.charAt(0)}
-            </div>
+          <div className="flex items-center gap-3">
+            <LiveClock />
+            <button className="relative p-2 rounded-full hover:bg-muted transition-colors">
+              <Bell size={18} />
+              <span className="absolute top-1 right-1 w-2 h-2 bg-destructive rounded-full" />
+            </button>
           </div>
         </header>
 
