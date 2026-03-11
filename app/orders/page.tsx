@@ -3,11 +3,13 @@
 import { useState } from "react"
 import { AppLayout } from "@/components/app-layout"
 import { PageContainer, SectionHeader, StatusBadge } from "@/components/shared"
-import { useProductionData } from "@/hooks/useProductionData"
+import { useProductionPlansData } from "@/hooks/useProductionData"
+import { useFactory } from "@/lib/factory-context"
 import { Search, Filter, PlusCircle } from "lucide-react"
 
 export default function OrdersPage() {
-  const { productionPlans, isLoading } = useProductionData()
+  const { factory } = useFactory()
+  const { plans: productionPlans, isLoading } = useProductionPlansData(factory?.id)
   const [search, setSearch] = useState("")
 
   const filtered = productionPlans?.filter(

@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react"
 import { AppLayout } from "@/components/app-layout"
 import { PageContainer, SectionHeader, StatusBadge, ProgressBar } from "@/components/shared"
-import { useProductionData } from "@/hooks/useProductionData"
+import { useLinesData, useProductionPlansData, useTodayProductionByLine } from "@/hooks/useProductionData"
+import { useFactory } from "@/lib/factory-context"
 import { cn } from "@/lib/utils"
 import { Shirt, Package, CheckCircle2, Clock } from "lucide-react"
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts"
@@ -12,7 +13,12 @@ const HOURS = ["8-9AM", "9-10AM", "10-11AM", "11-12PM", "12-1PM", "1-2PM", "2-3P
 const PENDING_IDX = [9, 10]
 
 export default function FinishingPage() {
-  const { hourlyData, lines, productionPlans, isLoading } = useProductionData()
+  const { factory } = useFactory()
+  const factoryId = factory?.id
+  const { lines, isLoading: ll } = useLinesData(factoryId)
+  const { plans: productionPlans, isLoading: pl } = useProductionPlansData(factoryId)
+  const { production: hourlyData, isLoading: hl } = useTodayProductionByLine(factoryId)
+  const isLoading = !factoryId || ll || pl || hl
   const [chartData, setChartData] = useState<any[]>([])
 
   useEffect(() => {

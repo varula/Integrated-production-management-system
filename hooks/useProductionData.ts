@@ -1,13 +1,6 @@
-'use client'
-
 import useSWR from 'swr'
-import { createClient } from '@supabase/supabase-js'
+import { supabase } from '@/lib/supabase'
 import { useFactory } from '@/lib/factory-context'
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
 
 // ─── Individual Data Hooks ──────────────────────────────────────────────────
 

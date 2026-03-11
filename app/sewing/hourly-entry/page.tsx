@@ -4,7 +4,7 @@ import { useState } from "react"
 import { AppLayout } from "@/components/app-layout"
 import { PageContainer, SectionHeader } from "@/components/shared"
 import { useFactory } from "@/lib/factory-context"
-import { useProductionData } from "@/hooks/useProductionData"
+import { useLinesData, useProductionPlansData } from "@/hooks/useProductionData"
 import { supabase } from "@/lib/supabase"
 import { Plus, Save, AlertCircle } from "lucide-react"
 
@@ -24,7 +24,9 @@ const HOURS = [
 
 export default function HourlyEntryPage() {
   const { factory } = useFactory()
-  const { lines, productionPlans, isLoading } = useProductionData()
+  const { lines, isLoading: ll } = useLinesData(factory?.id)
+  const { plans: productionPlans, isLoading: pl } = useProductionPlansData(factory?.id)
+  const isLoading = !factory?.id || ll || pl
   const [selectedLine, setSelectedLine] = useState<string>("")
   const [selectedPlan, setSelectedPlan] = useState<string>("")
   const [hourlyData, setHourlyData] = useState<Record<number, { produced: number; passed: number; defects: number }>>({})
