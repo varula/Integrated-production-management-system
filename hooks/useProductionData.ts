@@ -2,6 +2,10 @@ import useSWR from 'swr'
 import { supabase } from '@/lib/supabase'
 import { useFactory } from '@/lib/factory-context'
 
+// ============================================================================
+// Production Data Hooks - v2.1.0 (Fixed build cache issue)
+// ============================================================================
+
 // ─── Individual Data Hooks ──────────────────────────────────────────────────
 
 export function useLinesData(factoryId: string | null | undefined) {

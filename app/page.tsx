@@ -1,5 +1,9 @@
 "use client"
 
+// ============================================================================
+// Dashboard - v2.1.0 (Fixed build cache)
+// ============================================================================
+
 import { AppLayout } from "@/components/app-layout"
 import { SectionHeader, PageContainer, StatusBadge, ProgressBar } from "@/components/shared"
 import { useFactory } from "@/lib/factory-context"
