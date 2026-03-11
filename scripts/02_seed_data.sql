@@ -6,7 +6,7 @@
 INSERT INTO factories (id, name, code, location) VALUES
   ('550e8400-e29b-41d4-a716-446655440001'::uuid, 'Armana Apparels / Fashions Ltd', 'AA', 'Tejgaon Industrial Area, Dhaka'),
   ('550e8400-e29b-41d4-a716-446655440002'::uuid, 'Zyta Apparels Ltd', 'ZA', 'Mirpur, Dhaka'),
-  ('550e8400-e29b-41d4-a716-446655440003'::uuid, 'Denimach Ltd', 'DM', 'Sreepur, Gazipur'),
+  ('550e8400-e29b-41d4-a716-446655440003'::uuid, 'Denimach Ltd', 'DE', 'Sreepur, Gazipur'),
   ('550e8400-e29b-41d4-a716-446655440004'::uuid, 'Denitex Ltd', 'DT', 'Savar, Dhaka')
 ON CONFLICT DO NOTHING;
 

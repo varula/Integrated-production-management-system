@@ -1,0 +1,23 @@
+FACTORY NAMES & CODES UPDATED
+=============================
+
+All factory codes have been updated from DM to DE:
+
+✓ Updated Files:
+- lib/factory-context.tsx (3 locations: FACTORY_COLORS, fallback, catch fallback)
+- scripts/02_seed_data.sql (factory INSERT statement)
+- QUICK_START.md (2 locations: factory switcher, database contents)
+
+✓ Final Factory Configuration:
+- ZA → Zyta Apparels Ltd, Mirpur, Dhaka
+- AA → Armana Apparels / Fashions Ltd, Tejgaon Industrial Area, Dhaka
+- DE → Denimach Ltd, Sreepur, Gazipur
+- DT → Denitex Ltd, Savar, Dhaka
+
+✓ Build Status:
+- All hooks properly export: useLinesData, useProductionPlansData, useTodayProductionByLine
+- App/page.tsx correctly imports these individual hooks
+- Factory switcher uses correct codes in FACTORY_COLORS mapping
+- No DM references remain in codebase
+
+Next: Hard refresh browser (Ctrl+Shift+R) to force rebuild and clear cache.

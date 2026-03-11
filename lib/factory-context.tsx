@@ -25,7 +25,7 @@ const FactoryContext = createContext<FactoryContextType | undefined>(undefined)
 const FACTORY_COLORS: Record<string, { initial: string; color: string; fullName: string }> = {
   'AA': { initial: 'AA', color: 'bg-green-100 text-green-700', fullName: 'Armana Apparels / Fashions Ltd' },
   'ZA': { initial: 'ZA', color: 'bg-blue-100 text-blue-700', fullName: 'Zyta Apparels Ltd' },
-  'DM': { initial: 'DM', color: 'bg-purple-100 text-purple-700', fullName: 'Denimach Ltd' },
+  'DE': { initial: 'DE', color: 'bg-purple-100 text-purple-700', fullName: 'Denimach Ltd' },
   'DT': { initial: 'DT', color: 'bg-amber-100 text-amber-700', fullName: 'Denitex Ltd' },
 }
 
@@ -60,7 +60,7 @@ export function FactoryProvider({ children }: { children: ReactNode }) {
           const defaults = [
             { id: 'f1', code: 'AA', name: 'Armana Apparels / Fashions Ltd', location: 'Tejgaon Industrial Area, Dhaka' },
             { id: 'f2', code: 'ZA', name: 'Zyta Apparels Ltd', location: 'Mirpur, Dhaka' },
-            { id: 'f3', code: 'DM', name: 'Denimach Ltd', location: 'Sreepur, Gazipur' },
+            { id: 'f3', code: 'DE', name: 'Denimach Ltd', location: 'Sreepur, Gazipur' },
             { id: 'f4', code: 'DT', name: 'Denitex Ltd', location: 'Savar, Dhaka' },
           ]
           setFactories(createFactoriesWithUI(defaults))
@@ -82,7 +82,7 @@ export function FactoryProvider({ children }: { children: ReactNode }) {
         const defaults = [
           { id: 'f1', code: 'AA', name: 'Armana Apparels / Fashions Ltd', location: 'Tejgaon Industrial Area, Dhaka' },
           { id: 'f2', code: 'ZA', name: 'Zyta Apparels Ltd', location: 'Mirpur, Dhaka' },
-          { id: 'f3', code: 'DM', name: 'Denimach Ltd', location: 'Sreepur, Gazipur' },
+          { id: 'f3', code: 'DE', name: 'Denimach Ltd', location: 'Sreepur, Gazipur' },
           { id: 'f4', code: 'DT', name: 'Denitex Ltd', location: 'Savar, Dhaka' },
         ]
         setFactories(createFactoriesWithUI(defaults))
