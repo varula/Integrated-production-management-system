@@ -1,152 +1,197 @@
 'use client'
 
 import useSWR from 'swr'
-import { supabase } from '@/lib/supabase'
+import { createClient } from '@supabase/supabase-js'
 import { useFactory } from '@/lib/factory-context'
 
-// Hook for fetching all lines for a factory
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+)
+
+// ─── Individual Data Hooks ──────────────────────────────────────────────────
+
 export function useLinesData(factoryId: string | null | undefined) {
   const { data, error, isLoading, mutate } = useSWR(
     factoryId ? ['lines', factoryId] : null,
     async () => {
-      if (!factoryId) return []
-      const { data: lines, error } = await supabase
+      const { data: rows, error } = await supabase
         .from('lines')
         .select('*')
-        .eq('factory_id', factoryId)
+        .eq('factory_id', factoryId!)
+        .order('line_code')
       if (error) throw error
-      return lines || []
+      return rows || []
     },
     { revalidateOnFocus: false }
   )
-  return { lines: data || [], error, isLoading, mutate }
+  return { lines: data ?? [], error, isLoading, mutate }
 }
 
-// Hook for fetching all production plans for a factory
 export function useProductionPlansData(factoryId: string | null | undefined) {
   const { data, error, isLoading, mutate } = useSWR(
     factoryId ? ['production_plans', factoryId] : null,
     async () => {
-      if (!factoryId) return []
-      const { data: plans, error } = await supabase
+      const { data: rows, error } = await supabase
         .from('production_plans')
         .select('*')
-        .eq('factory_id', factoryId)
+        .eq('factory_id', factoryId!)
+        .order('created_at', { ascending: false })
       if (error) throw error
-      return plans || []
+      return rows || []
     },
     { revalidateOnFocus: false }
   )
-  return { plans: data || [], error, isLoading, mutate }
+  return { plans: data ?? [], error, isLoading, mutate }
 }
 
-// Hook for fetching today's hourly production
 export function useTodayProductionByLine(factoryId: string | null | undefined) {
   const today = new Date().toISOString().split('T')[0]
   const { data, error, isLoading, mutate } = useSWR(
-    factoryId ? ['today_production', factoryId, today] : null,
+    factoryId ? ['hourly_production', factoryId, today] : null,
     async () => {
-      if (!factoryId) return []
-      const { data: production, error } = await supabase
+      const { data: rows, error } = await supabase
         .from('hourly_production')
         .select('*')
-        .eq('factory_id', factoryId)
+        .eq('factory_id', factoryId!)
         .eq('date', today)
+        .order('hour_index')
       if (error) throw error
-      return production || []
+      return rows || []
     },
     { revalidateOnFocus: false }
   )
-  return { production: data || [], error, isLoading, mutate }
+  return { production: data ?? [], error, isLoading, mutate }
 }
 
-// Hook for fetching downtime records
 export function useDowntimeData(factoryId: string | null | undefined) {
   const { data, error, isLoading, mutate } = useSWR(
     factoryId ? ['downtime', factoryId] : null,
     async () => {
-      if (!factoryId) return []
-      const { data: downtime, error } = await supabase
+      const { data: rows, error } = await supabase
         .from('downtime')
         .select('*')
-        .eq('factory_id', factoryId)
+        .eq('factory_id', factoryId!)
         .order('start_time', { ascending: false })
       if (error) throw error
-      return downtime || []
+      return rows || []
     },
     { revalidateOnFocus: false }
   )
-  return { downtime: data || [], error, isLoading, mutate }
+  return { downtime: data ?? [], error, isLoading, mutate }
 }
 
-// Hook for fetching a single production plan
-export function useProductionPlan(planId: string | null) {
-  const { data, error, isLoading, mutate } = useSWR(
-    planId ? ['production_plan', planId] : null,
-    async () => {
-      if (!planId) return null
-      const { data: plan, error } = await supabase
-        .from('production_plans')
-        .select('*')
-        .eq('id', planId)
-        .single()
-      if (error) throw error
-      return plan
-    },
-    { revalidateOnFocus: false }
-  )
-  return { plan: data, error, isLoading, mutate }
-}
+// ─── Composite Hook (used by all pages) ────────────────────────────────────
 
-// Hook for fetching a single line
-export function useLine(lineId: string | null) {
-  const { data, error, isLoading, mutate } = useSWR(
-    lineId ? ['line', lineId] : null,
-    async () => {
-      if (!lineId) return null
-      const { data: line, error } = await supabase
-        .from('lines')
-        .select('*')
-        .eq('id', lineId)
-        .single()
-      if (error) throw error
-      return line
-    },
-    { revalidateOnFocus: false }
-  )
-  return { line: data, error, isLoading, mutate }
-}
-
-// Composite hook - Main hook used by all pages
 export function useProductionData() {
-  try {
-    const { factory } = useFactory()
-    const factoryId = factory?.id
+  const { factory } = useFactory()
+  const factoryId = factory?.id ?? null
 
-    const { lines, isLoading: linesLoading } = useLinesData(factoryId)
-    const { plans: productionPlans, isLoading: plansLoading } = useProductionPlansData(factoryId)
-    const { production: hourlyData, isLoading: hourlyLoading } = useTodayProductionByLine(factoryId)
-    const { downtime, isLoading: downtimeLoading } = useDowntimeData(factoryId)
+  const { lines, isLoading: ll } = useLinesData(factoryId)
+  const { plans: productionPlans, isLoading: pl } = useProductionPlansData(factoryId)
+  const { production: hourlyData, isLoading: hl } = useTodayProductionByLine(factoryId)
+  const { downtime, isLoading: dl } = useDowntimeData(factoryId)
 
-    const isLoading = !factoryId || linesLoading || plansLoading || hourlyLoading
-
-    return {
-      lines: lines || [],
-      productionPlans: productionPlans || [],
-      hourlyData: hourlyData || [],
-      downtime: downtime || [],
-      factory,
-      isLoading,
-    }
-  } catch (err) {
-    console.error('[v0] useProductionData error:', err)
-    return {
-      lines: [],
-      productionPlans: [],
-      hourlyData: [],
-      downtime: [],
-      factory: null,
-      isLoading: true,
-    }
+  return {
+    lines: lines ?? [],
+    productionPlans: productionPlans ?? [],
+    hourlyData: hourlyData ?? [],
+    downtime: downtime ?? [],
+    factory,
+    isLoading: !factoryId || ll || pl || hl || dl,
   }
+}
+
+// ─── CRUD helpers ──────────────────────────────────────────────────────────
+
+export async function createProductionPlan(plan: {
+  factory_id: string
+  order_id: string
+  buyer_name: string
+  style: string
+  color?: string
+  size_range?: string
+  planned_qty: number
+  target_end_date: string
+}) {
+  const { data, error } = await supabase
+    .from('production_plans')
+    .insert([{ ...plan, status: 'NOT_STARTED' }])
+    .select()
+    .single()
+  if (error) throw error
+  return data
+}
+
+export async function updateProductionPlan(id: string, updates: Partial<{
+  order_id: string
+  buyer_name: string
+  style: string
+  color: string
+  size_range: string
+  planned_qty: number
+  target_end_date: string
+  status: string
+}>) {
+  const { data, error } = await supabase
+    .from('production_plans')
+    .update(updates)
+    .eq('id', id)
+    .select()
+    .single()
+  if (error) throw error
+  return data
+}
+
+export async function deleteProductionPlan(id: string) {
+  const { error } = await supabase
+    .from('production_plans')
+    .delete()
+    .eq('id', id)
+  if (error) throw error
+}
+
+export async function upsertHourlyProduction(entry: {
+  factory_id: string
+  line_id: string
+  production_plan_id: string
+  hour_slot: string
+  hour_index: number
+  produced_qty: number
+  passed_qty: number
+  defect_qty: number
+  date: string
+}) {
+  const { data, error } = await supabase
+    .from('hourly_production')
+    .upsert([entry], { onConflict: 'factory_id,line_id,date,hour_index' })
+    .select()
+    .single()
+  if (error) throw error
+  return data
+}
+
+export async function createDowntime(entry: {
+  factory_id: string
+  line_id: string
+  start_time: string
+  end_time: string
+  duration_minutes: number
+  reason: string
+}) {
+  const { data, error } = await supabase
+    .from('downtime')
+    .insert([entry])
+    .select()
+    .single()
+  if (error) throw error
+  return data
+}
+
+export async function deleteDowntime(id: string) {
+  const { error } = await supabase
+    .from('downtime')
+    .delete()
+    .eq('id', id)
+  if (error) throw error
 }
