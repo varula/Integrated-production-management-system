@@ -3,7 +3,7 @@
 ## What Was Built
 
 A **production management system for apparel/denim factories** with:
-- 4 textile factories (Dhanaperumal, Abhiram, Mallikarjun, Vishwa)
+- 4 textile factories (Armana Apparels, Zyta Apparels, Denimach, Denitex)
 - 16 production lines per factory (12 sewing + 4 finishing)
 - 10 active production orders from major buyers
 - Real-time hourly production tracking
@@ -14,7 +14,7 @@ A **production management system for apparel/denim factories** with:
 
 ### 1. **Factory Switcher**
 Top-left dropdown → switch between 4 factories instantly
-- Color-coded avatars: DP=green, AB=blue, MK=purple, VS=amber
+- Color-coded avatars: AA=green, ZA=blue, DE=purple, DT=amber
 - Factory name, address, and "Live" clock update automatically
 
 ### 2. **Dashboard** (/)
@@ -72,10 +72,10 @@ Real-time Charts & Tables
 ## Database Contents (Already Seeded)
 
 ### Factories (4)
-- Dhanaperumal Textiles (DP) — Tiruppur, TN
-- Abhiram Industries (AB) — Erode, TN
-- Mallikarjun Garments (MK) — Bangalore, KA
-- Vishwa Apparel Co. (VS) — Hyderabad, TS
+- Armana Apparels / Fashions Ltd (AA) — Tiruppur, TN
+- Zyta Apparels Ltd (ZA) — Erode, TN
+- Denimach Ltd (DE) — Bangalore, KA
+- Denitex Ltd (DT) — Hyderabad, TS
 
 ### Lines per Factory (16 total)
 - L-01 to L-12: Sewing lines (capacity: 45-55 pcs/hr)

@@ -4,10 +4,10 @@
 
 -- INSERT FACTORIES (4 factories)
 INSERT INTO factories (id, name, code, location) VALUES
-  ('550e8400-e29b-41d4-a716-446655440001'::uuid, 'Dhanaperumal Textiles', 'DP', 'Tiruppur, Tamil Nadu'),
-  ('550e8400-e29b-41d4-a716-446655440002'::uuid, 'Abhiram Industries', 'AB', 'Erode, Tamil Nadu'),
-  ('550e8400-e29b-41d4-a716-446655440003'::uuid, 'Mallikarjun Garments', 'MK', 'Bangalore, Karnataka'),
-  ('550e8400-e29b-41d4-a716-446655440004'::uuid, 'Vishwa Apparel Co.', 'VS', 'Hyderabad, Telangana')
+  ('550e8400-e29b-41d4-a716-446655440001'::uuid, 'Armana Apparels / Fashions Ltd', 'DP', 'Tiruppur, Tamil Nadu'),
+  ('550e8400-e29b-41d4-a716-446655440002'::uuid, 'Zyta Apparels Ltd', 'AB', 'Erode, Tamil Nadu'),
+  ('550e8400-e29b-41d4-a716-446655440003'::uuid, 'Denimach Ltd', 'MK', 'Bangalore, Karnataka'),
+  ('550e8400-e29b-41d4-a716-446655440004'::uuid, 'Denitex Ltd', 'VS', 'Hyderabad, Telangana')
 ON CONFLICT DO NOTHING;
 
 -- ========================================

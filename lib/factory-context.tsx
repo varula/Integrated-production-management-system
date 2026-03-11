@@ -23,10 +23,10 @@ interface FactoryContextType {
 const FactoryContext = createContext<FactoryContextType | undefined>(undefined)
 
 const FACTORY_COLORS: Record<string, { initial: string; color: string; fullName: string }> = {
-  'DP': { initial: 'DP', color: 'bg-green-100 text-green-700', fullName: 'Dhanaperumal Textiles' },
-  'AB': { initial: 'AB', color: 'bg-blue-100 text-blue-700', fullName: 'Abhiram Industries' },
-  'MK': { initial: 'MK', color: 'bg-purple-100 text-purple-700', fullName: 'Mallikarjun Garments' },
-  'VS': { initial: 'VS', color: 'bg-amber-100 text-amber-700', fullName: 'Vishwa Apparel Co.' },
+  'DP': { initial: 'AA', color: 'bg-green-100 text-green-700', fullName: 'Armana Apparels / Fashions Ltd' },
+  'AB': { initial: 'ZA', color: 'bg-blue-100 text-blue-700', fullName: 'Zyta Apparels Ltd' },
+  'MK': { initial: 'DE', color: 'bg-purple-100 text-purple-700', fullName: 'Denimach Ltd' },
+  'VS': { initial: 'DT', color: 'bg-amber-100 text-amber-700', fullName: 'Denitex Ltd' },
 }
 
 function createFactoriesWithUI(data: any[]): Factory[] {
@@ -58,10 +58,10 @@ export function FactoryProvider({ children }: { children: ReactNode }) {
           console.error('[v0] Supabase error:', error)
           // Fallback to default factories if Supabase fails
           const defaults = [
-            { id: 'f1', code: 'DP', name: 'Dhanaperumal Textiles', location: 'Bangalore, India' },
-            { id: 'f2', code: 'AB', name: 'Abhiram Industries', location: 'Tiruppur, India' },
-            { id: 'f3', code: 'MK', name: 'Mallikarjun Garments', location: 'Bangalore, India' },
-            { id: 'f4', code: 'VS', name: 'Vishwa Apparel Co.', location: 'Chennai, India' },
+            { id: 'f1', code: 'DP', name: 'Armana Apparels / Fashions Ltd', location: 'Tiruppur, Tamil Nadu' },
+            { id: 'f2', code: 'AB', name: 'Zyta Apparels Ltd', location: 'Erode, Tamil Nadu' },
+            { id: 'f3', code: 'MK', name: 'Denimach Ltd', location: 'Bangalore, Karnataka' },
+            { id: 'f4', code: 'VS', name: 'Denitex Ltd', location: 'Hyderabad, Telangana' },
           ]
           setFactories(createFactoriesWithUI(defaults))
           if (defaults.length > 0) setSelectedFactory(createFactoriesWithUI(defaults)[0])
@@ -80,10 +80,10 @@ export function FactoryProvider({ children }: { children: ReactNode }) {
         console.error('[v0] Failed to load factories:', error)
         // Fallback to defaults
         const defaults = [
-          { id: 'f1', code: 'DP', name: 'Dhanaperumal Textiles', location: 'Bangalore, India' },
-          { id: 'f2', code: 'AB', name: 'Abhiram Industries', location: 'Tiruppur, India' },
-          { id: 'f3', code: 'MK', name: 'Mallikarjun Garments', location: 'Bangalore, India' },
-          { id: 'f4', code: 'VS', name: 'Vishwa Apparel Co.', location: 'Chennai, India' },
+          { id: 'f1', code: 'DP', name: 'Armana Apparels / Fashions Ltd', location: 'Tiruppur, Tamil Nadu' },
+          { id: 'f2', code: 'AB', name: 'Zyta Apparels Ltd', location: 'Erode, Tamil Nadu' },
+          { id: 'f3', code: 'MK', name: 'Denimach Ltd', location: 'Bangalore, Karnataka' },
+          { id: 'f4', code: 'VS', name: 'Denitex Ltd', location: 'Hyderabad, Telangana' },
         ]
         setFactories(createFactoriesWithUI(defaults))
         if (defaults.length > 0) setSelectedFactory(createFactoriesWithUI(defaults)[0])

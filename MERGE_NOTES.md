@@ -9,7 +9,7 @@ This is a **unified apparel production management system** created by merging tw
 
 ### 1. **Real-Time Data Backend (Supabase)**
 - PostgreSQL database with 5 core tables:
-  - `factories`: 4 textile factories (Dhanaperumal, Abhiram, Mallikarjun, Vishwa)
+  - `factories`: 4 textile factories (Armana Apparels, Zyta Apparels, Denimach, Denitex)
   - `lines`: 16 production lines per factory (12 sewing + 4 finishing)
   - `production_plans`: 10 active orders with buyers (H&M, Zara, Levi's, Calvin Klein, Wrangler)
   - `hourly_production`: Hourly metrics (produced, passed, defects) for each line
@@ -19,7 +19,7 @@ This is a **unified apparel production management system** created by merging tw
 - **Factory Switcher**: Dropdown to switch between all 4 factories instantly
 - **Live Clock**: Real-time HH:MM:SS display with "Live" indicator
 - **Factory Header**: Shows factory name, address, and "Integrated Production Management System"
-- **User Avatar**: Changes color per factory (DP=green, AB=blue, MK=purple, VS=amber)
+- **User Avatar**: Changes color per factory (AA=green, ZA=blue, DE=purple, DT=amber)
 
 ### 3. **Advanced KPI Engine**
 Integrated 15+ metrics from lovable project:
