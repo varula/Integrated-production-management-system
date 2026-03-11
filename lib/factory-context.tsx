@@ -58,10 +58,10 @@ export function FactoryProvider({ children }: { children: ReactNode }) {
           console.error('[v0] Supabase error:', error)
           // Fallback to default factories if Supabase fails
           const defaults = [
-            { id: 'f1', code: 'DP', name: 'Armana Apparels / Fashions Ltd', location: 'Tiruppur, Tamil Nadu' },
-            { id: 'f2', code: 'AB', name: 'Zyta Apparels Ltd', location: 'Erode, Tamil Nadu' },
-            { id: 'f3', code: 'MK', name: 'Denimach Ltd', location: 'Bangalore, Karnataka' },
-            { id: 'f4', code: 'VS', name: 'Denitex Ltd', location: 'Hyderabad, Telangana' },
+            { id: 'f1', code: 'DP', name: 'Armana Apparels / Fashions Ltd', location: 'Tejgaon Industrial Area, Dhaka' },
+            { id: 'f2', code: 'AB', name: 'Zyta Apparels Ltd', location: 'Mirpur, Dhaka' },
+            { id: 'f3', code: 'MK', name: 'Denimach Ltd', location: 'Sreepur, Gazipur' },
+            { id: 'f4', code: 'VS', name: 'Denitex Ltd', location: 'Savar, Dhaka' },
           ]
           setFactories(createFactoriesWithUI(defaults))
           if (defaults.length > 0) setSelectedFactory(createFactoriesWithUI(defaults)[0])
@@ -80,10 +80,10 @@ export function FactoryProvider({ children }: { children: ReactNode }) {
         console.error('[v0] Failed to load factories:', error)
         // Fallback to defaults
         const defaults = [
-          { id: 'f1', code: 'DP', name: 'Armana Apparels / Fashions Ltd', location: 'Tiruppur, Tamil Nadu' },
-          { id: 'f2', code: 'AB', name: 'Zyta Apparels Ltd', location: 'Erode, Tamil Nadu' },
-          { id: 'f3', code: 'MK', name: 'Denimach Ltd', location: 'Bangalore, Karnataka' },
-          { id: 'f4', code: 'VS', name: 'Denitex Ltd', location: 'Hyderabad, Telangana' },
+          { id: 'f1', code: 'DP', name: 'Armana Apparels / Fashions Ltd', location: 'Tejgaon Industrial Area, Dhaka' },
+          { id: 'f2', code: 'AB', name: 'Zyta Apparels Ltd', location: 'Mirpur, Dhaka' },
+          { id: 'f3', code: 'MK', name: 'Denimach Ltd', location: 'Sreepur, Gazipur' },
+          { id: 'f4', code: 'VS', name: 'Denitex Ltd', location: 'Savar, Dhaka' },
         ]
         setFactories(createFactoriesWithUI(defaults))
         if (defaults.length > 0) setSelectedFactory(createFactoriesWithUI(defaults)[0])

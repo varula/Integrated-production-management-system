@@ -72,10 +72,10 @@ Real-time Charts & Tables
 ## Database Contents (Already Seeded)
 
 ### Factories (4)
-- Armana Apparels / Fashions Ltd (AA) — Tiruppur, TN
-- Zyta Apparels Ltd (ZA) — Erode, TN
-- Denimach Ltd (DE) — Bangalore, KA
-- Denitex Ltd (DT) — Hyderabad, TS
+- Armana Apparels / Fashions Ltd (AA) — Tejgaon Industrial Area, Dhaka
+- Zyta Apparels Ltd (ZA) — Mirpur, Dhaka
+- Denimach Ltd (DE) — Sreepur, Gazipur
+- Denitex Ltd (DT) — Savar, Dhaka
 
 ### Lines per Factory (16 total)
 - L-01 to L-12: Sewing lines (capacity: 45-55 pcs/hr)

@@ -2,40 +2,7 @@ import useSWR from 'swr'
 import { supabase } from '@/lib/supabase'
 import { useFactory } from '@/lib/factory-context'
 
-/**
- * Composite hook that combines lines, production plans, and hourly data
- * This is the main hook used by pages
- */
-export function useProductionData() {
-  try {
-    const { factory } = useFactory()
-    const factoryId = factory?.id
-
-    const { lines } = useLinesData(factoryId)
-    const { plans: productionPlans } = useProductionPlansData(factoryId)
-    const { production: hourlyData } = useTodayProductionByLine(factoryId)
-
-    const isLoading = !factoryId || !lines || !productionPlans || !hourlyData
-
-    return {
-      lines: lines || [],
-      productionPlans: productionPlans || [],
-      hourlyData: hourlyData || [],
-      isLoading,
-      factory,
-    }
-  } catch (err) {
-    console.log('[v0] useProductionData hook error:', err)
-    return {
-      lines: [],
-      productionPlans: [],
-      hourlyData: [],
-      isLoading: true,
-      factory: null,
-    }
-  }
-}
-
+// Individual hook functions first
 export function useLinesData(factoryId: string | null | undefined) {
   const { data, error, isLoading, mutate } = useSWR(
     factoryId ? ['lines', factoryId] : null,
@@ -96,5 +63,39 @@ export function useTodayProductionByLine(factoryId: string | null | undefined) {
     error,
     isLoading,
     mutate,
+  }
+}
+
+/**
+ * Composite hook that combines lines, production plans, and hourly data
+ * This is the main hook used by pages
+ */
+export function useProductionData() {
+  try {
+    const { factory } = useFactory()
+    const factoryId = factory?.id
+
+    const linesResult = useLinesData(factoryId)
+    const plansResult = useProductionPlansData(factoryId)
+    const hourlyResult = useTodayProductionByLine(factoryId)
+
+    const isLoading = !factoryId || linesResult.isLoading || plansResult.isLoading || hourlyResult.isLoading
+
+    return {
+      lines: linesResult.lines,
+      productionPlans: plansResult.plans,
+      hourlyData: hourlyResult.production,
+      isLoading,
+      factory,
+    }
+  } catch (err) {
+    console.log('[v0] useProductionData hook error:', err)
+    return {
+      lines: [],
+      productionPlans: [],
+      hourlyData: [],
+      isLoading: true,
+      factory: null,
+    }
   }
 }
