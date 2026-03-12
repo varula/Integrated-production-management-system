@@ -21,14 +21,14 @@ CREATE POLICY "Users can view production plans from their factories" ON producti
     )
   );
 
--- INSERT: Only MANAGER and ADMIN roles can create
+-- INSERT: Only manager and admin roles can create
 CREATE POLICY "Managers can create production plans" ON production_plans
   FOR INSERT
   WITH CHECK (
     factory_id IN (
       SELECT factory_id FROM user_factory_roles 
       WHERE user_id = auth.uid() 
-      AND role IN ('ADMIN', 'MANAGER')
+      AND role IN ('manager', 'admin')
     )
   );
 
@@ -55,7 +55,7 @@ CREATE POLICY "Managers can delete production plans" ON production_plans
     factory_id IN (
       SELECT factory_id FROM user_factory_roles 
       WHERE user_id = auth.uid() 
-      AND role = 'ADMIN'
+      AND role = 'admin'
     )
   );
 
@@ -85,7 +85,7 @@ CREATE POLICY "Operators can log production" ON hourly_production
     factory_id IN (
       SELECT factory_id FROM user_factory_roles 
       WHERE user_id = auth.uid() 
-      AND role IN ('ADMIN', 'MANAGER', 'OPERATOR')
+      AND role IN ('admin', 'manager', 'operator')
     )
   );
 
@@ -112,7 +112,7 @@ CREATE POLICY "Managers can delete hourly production" ON hourly_production
     factory_id IN (
       SELECT factory_id FROM user_factory_roles 
       WHERE user_id = auth.uid() 
-      AND role IN ('ADMIN', 'MANAGER')
+      AND role IN ('admin', 'manager')
     )
   );
 
@@ -142,7 +142,7 @@ CREATE POLICY "Operators can log downtime" ON downtime
     factory_id IN (
       SELECT factory_id FROM user_factory_roles 
       WHERE user_id = auth.uid() 
-      AND role IN ('ADMIN', 'MANAGER', 'OPERATOR')
+      AND role IN ('admin', 'manager', 'operator')
     )
   );
 
@@ -169,7 +169,7 @@ CREATE POLICY "Managers can delete downtime" ON downtime
     factory_id IN (
       SELECT factory_id FROM user_factory_roles 
       WHERE user_id = auth.uid() 
-      AND role IN ('ADMIN', 'MANAGER')
+      AND role IN ('admin', 'manager')
     )
   );
 
@@ -191,7 +191,7 @@ CREATE POLICY "Users can view audit logs from their factories" ON audit_logs
     OR (
       SELECT role FROM user_factory_roles 
       WHERE user_id = auth.uid() LIMIT 1
-    ) = 'ADMIN'
+    ) = 'admin'
   );
 
 -- INSERT: System service role creates logs

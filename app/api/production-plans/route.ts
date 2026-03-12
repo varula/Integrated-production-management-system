@@ -1,11 +1,26 @@
 'use server'
 
 import { supabase } from '@/lib/supabase'
+import { logCreate, logUpdate, logDelete } from '@/lib/audit'
 import { NextRequest, NextResponse } from 'next/server'
+
+// Helper to get current user
+async function getCurrentUser(request: NextRequest) {
+  const token = request.headers.get('Authorization')?.split(' ')[1]
+  if (!token) return null
+  
+  try {
+    const { data: { user } } = await supabase.auth.getUser(token)
+    return user
+  } catch {
+    return null
+  }
+}
 
 // POST: Create new production plan
 export async function POST(request: NextRequest) {
   try {
+    const user = await getCurrentUser(request)
     const body = await request.json()
     const { order_id, buyer_name, style, color, size_range, planned_qty, target_end_date, factory_id } = body
 
@@ -30,6 +45,11 @@ export async function POST(request: NextRequest) {
 
     if (error) throw error
 
+    // Log audit
+    if (user && data && data[0]) {
+      await logCreate(user.id, factory_id, 'production_plans', data[0].id, data[0])
+    }
+
     return NextResponse.json({ success: true, data }, { status: 201 })
   } catch (error) {
     console.error('[v0] POST /api/production-plans error:', error)
@@ -40,12 +60,20 @@ export async function POST(request: NextRequest) {
 // PUT: Update production plan
 export async function PUT(request: NextRequest) {
   try {
+    const user = await getCurrentUser(request)
     const body = await request.json()
-    const { id, ...updateData } = body
+    const { id, factory_id, ...updateData } = body
 
-    if (!id) {
-      return NextResponse.json({ error: 'Production plan ID is required' }, { status: 400 })
+    if (!id || !factory_id) {
+      return NextResponse.json({ error: 'Production plan ID and factory ID are required' }, { status: 400 })
     }
+
+    // Get old values before update
+    const { data: oldData } = await supabase
+      .from('production_plans')
+      .select('*')
+      .eq('id', id)
+      .single()
 
     const { data, error } = await supabase
       .from('production_plans')
@@ -54,6 +82,11 @@ export async function PUT(request: NextRequest) {
       .select()
 
     if (error) throw error
+
+    // Log audit
+    if (user && data && data[0]) {
+      await logUpdate(user.id, factory_id, 'production_plans', id, oldData || {}, data[0])
+    }
 
     return NextResponse.json({ success: true, data })
   } catch (error) {
@@ -65,12 +98,21 @@ export async function PUT(request: NextRequest) {
 // DELETE: Delete production plan
 export async function DELETE(request: NextRequest) {
   try {
+    const user = await getCurrentUser(request)
     const { searchParams } = new URL(request.url)
     const id = searchParams.get('id')
+    const factory_id = searchParams.get('factory_id')
 
-    if (!id) {
-      return NextResponse.json({ error: 'Production plan ID is required' }, { status: 400 })
+    if (!id || !factory_id) {
+      return NextResponse.json({ error: 'Production plan ID and factory ID are required' }, { status: 400 })
     }
+
+    // Get old values before deletion
+    const { data: oldData } = await supabase
+      .from('production_plans')
+      .select('*')
+      .eq('id', id)
+      .single()
 
     const { error } = await supabase
       .from('production_plans')
@@ -78,6 +120,11 @@ export async function DELETE(request: NextRequest) {
       .eq('id', id)
 
     if (error) throw error
+
+    // Log audit
+    if (user && oldData) {
+      await logDelete(user.id, factory_id, 'production_plans', id, oldData)
+    }
 
     return NextResponse.json({ success: true })
   } catch (error) {
