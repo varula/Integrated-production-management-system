@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/auth-context'
 import { supabase } from '@/lib/supabase'
@@ -16,7 +16,7 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null)
 
   // Load factories on mount
-  useState(() => {
+  useEffect(() => {
     const loadFactories = async () => {
       try {
         const { data } = await supabase.from('factories').select('id, name, code, location')
@@ -31,6 +31,21 @@ export default function LoginPage() {
     }
     loadFactories()
   }, [])
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoading(true)
+    setError(null)
+
+    try {
+      await login(email, password, factory_id)
+      router.push('/')
+    } catch (err: any) {
+      setError(err.message || 'Login failed')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const handleDemoLogin = async () => {
     setLoading(true)

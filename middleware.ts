@@ -1,15 +1,8 @@
 import { type NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
-
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
 
 const publicRoutes = ['/login', '/api/auth/login']
-const adminRoutes = ['/admin']
 
-export async function middleware(request: NextRequest) {
+export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   // Skip middleware for public routes
@@ -17,7 +10,20 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
-  // Get session
+  // Check for user in localStorage (for demo mode) or session
+  const user = request.cookies.get('user')?.value
+  
+  // If no user and not a public route, redirect to login
+  if (!user && !publicRoutes.some(route => pathname.startsWith(route))) {
+    return NextResponse.redirect(new URL('/login', request.url))
+  }
+
+  return NextResponse.next()
+}
+
+export const config = {
+  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
+}
   const token = request.cookies.get('sb-token')?.value
 
   if (!token) {
