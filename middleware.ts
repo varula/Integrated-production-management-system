@@ -10,8 +10,7 @@ export function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
-  // For demo mode, just allow access (user stored in localStorage)
-  // In production, check for valid session/JWT token here
+  // For demo mode, allow all access (authentication checked in React layer)
   return NextResponse.next()
 }
 
