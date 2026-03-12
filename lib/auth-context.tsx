@@ -34,6 +34,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const initializeAuth = async () => {
       try {
+        // Check for demo admin mode first
+        const storedUser = typeof window !== 'undefined' ? localStorage.getItem('user') : null
+        if (storedUser) {
+          const demoUser = JSON.parse(storedUser)
+          setUser(demoUser)
+          setLoading(false)
+          return
+        }
+
         const { data: { session: currentSession } } = await supabase.auth.getSession()
         setSession(currentSession)
         
@@ -111,6 +120,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = async () => {
     try {
       if (user) {
+        // If demo mode, just clear localStorage
+        if (user.id === 'demo-admin-001') {
+          localStorage.removeItem('user')
+          setUser(null)
+          return
+        }
+
+        // Otherwise use Supabase
         await supabase.from('audit_logs').insert({
           user_id: user.id,
           factory_id: user.factory_id,

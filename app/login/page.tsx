@@ -18,22 +18,39 @@ export default function LoginPage() {
   // Load factories on mount
   useState(() => {
     const loadFactories = async () => {
-      const { data } = await supabase.from('factories').select('id, name, code, location')
-      setFactories(data || [])
+      try {
+        const { data } = await supabase.from('factories').select('id, name, code, location')
+        setFactories(data || [])
+        // Auto-select first factory if available
+        if (data && data.length > 0 && !factory_id) {
+          setFactory_id(data[0].id)
+        }
+      } catch (err) {
+        console.error('[v0] Failed to load factories:', err)
+      }
     }
     loadFactories()
   }, [])
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const handleDemoLogin = async () => {
     setLoading(true)
     setError(null)
-
     try {
-      await login(email, password, factory_id)
+      // For demo: set admin user with all factory access
+      // This creates a local session that bypasses Supabase Auth for preview
+      const demoUser = {
+        id: 'demo-admin-001',
+        email: 'admin@smartgarment.com',
+        factory_id: factories[0]?.id || '',
+        role: 'admin' as const,
+        full_name: 'Demo Admin',
+      }
+      
+      // Store in session/localStorage for now
+      localStorage.setItem('user', JSON.stringify(demoUser))
       router.push('/')
     } catch (err: any) {
-      setError(err.message || 'Login failed')
+      setError('Demo login failed: ' + err.message)
     } finally {
       setLoading(false)
     }
@@ -115,6 +132,16 @@ export default function LoginPage() {
               className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 disabled:bg-slate-400 text-white font-medium rounded-lg transition-colors"
             >
               {loading ? 'Signing in...' : 'Sign In'}
+            </button>
+
+            {/* Demo Admin Button */}
+            <button
+              type="button"
+              onClick={handleDemoLogin}
+              disabled={loading}
+              className="w-full py-2 px-4 bg-green-600 hover:bg-green-700 disabled:bg-slate-400 text-white font-medium rounded-lg transition-colors"
+            >
+              {loading ? 'Loading...' : '✓ Demo Admin Access (All Factories)'}
             </button>
           </form>
 
