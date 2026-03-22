@@ -4,6 +4,8 @@
 // Dashboard - v2.1.0 (Fixed build cache)
 // ============================================================================
 
+import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
 import { AppLayout } from "@/components/app-layout"
 import { SectionHeader, PageContainer, StatusBadge, ProgressBar } from "@/components/shared"
 import { useFactory } from "@/lib/factory-context"
@@ -18,10 +20,27 @@ import {
 } from "recharts"
 import { Activity, AlertTriangle, CheckCircle2, TrendingUp, Zap, Package } from "lucide-react"
 
-const HOUR_LABELS = ["8AM","9AM","10AM","11AM","12PM","1PM","2PM","3PM","4PM","5PM","6PM"]
-const LINE_CAPACITY_PER_HOUR = 220 // avg pcs/hr per factory
+const HOUR_LABELS = ["8AM","9AM","10AM","11AM","12AM","1PM","2PM","3PM","4PM","5PM","6PM"]
+const LINE_CAPACITY_PER_HOUR = 220
 
 export default function DashboardPage() {
+  const router = useRouter()
+  const [isDemo, setIsDemo] = useState(false)
+  
+  // Demo mode setup
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const demo = localStorage.getItem('demo_mode')
+      if (!demo) {
+        localStorage.setItem('demo_mode', 'true')
+        localStorage.setItem('user_role', 'admin')
+        setIsDemo(true)
+      } else {
+        setIsDemo(true)
+      }
+    }
+  }, [])
+
   const { factory } = useFactory()
   const factoryId = factory?.id
 
