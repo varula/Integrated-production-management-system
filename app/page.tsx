@@ -1,56 +1,59 @@
 "use client"
 
-// ============================================================================
-// Dashboard - v2.1.0 (Fixed build cache)
-// ============================================================================
-
 import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
 import { AppLayout } from "@/components/app-layout"
-import { SectionHeader, PageContainer, StatusBadge, ProgressBar } from "@/components/shared"
 import { useFactory } from "@/lib/factory-context"
-import {
-  useLinesData,
-  useProductionPlansData,
-  useTodayProductionByLine,
-} from "@/hooks/useProductionData"
-import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
-  ResponsiveContainer, PieChart, Pie, Cell, Legend,
-} from "recharts"
-import { Activity, AlertTriangle, CheckCircle2, TrendingUp, Zap, Package } from "lucide-react"
+import { useLinesData, useProductionPlansData, useTodayProductionByLine } from "@/hooks/useProductionData"
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from "recharts"
+import { Activity, AlertTriangle, CheckCircle2, Package } from "lucide-react"
+import { SectionHeader, PageContainer, StatusBadge, ProgressBar } from "@/components/shared"
 
-const HOUR_LABELS = ["8AM","9AM","10AM","11AM","12AM","1PM","2PM","3PM","4PM","5PM","6PM"]
+const HOUR_LABELS = ["8AM","9AM","10AM","11AM","12PM","1PM","2PM","3PM","4PM","5PM","6PM"]
 const LINE_CAPACITY_PER_HOUR = 220
 
 export default function DashboardPage() {
-  const router = useRouter()
-  const [isDemo, setIsDemo] = useState(false)
+  const [mounted, setMounted] = useState(false)
   
-  // Demo mode setup
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const demo = localStorage.getItem('demo_mode')
-      if (!demo) {
-        localStorage.setItem('demo_mode', 'true')
-        localStorage.setItem('user_role', 'admin')
-        setIsDemo(true)
-      } else {
-        setIsDemo(true)
-      }
+    setMounted(true)
+    // Auto-enable demo mode
+    if (typeof window !== 'undefined' && !localStorage.getItem('demo_enabled')) {
+      localStorage.setItem('demo_enabled', 'true')
+      localStorage.setItem('user', JSON.stringify({
+        id: 'demo-admin-001',
+        email: 'admin@smartgarment.com',
+        factory_id: '',
+        role: 'admin',
+        full_name: 'Demo Admin',
+      }))
     }
   }, [])
 
-  const { factory } = useFactory()
+  const { factory, factories } = useFactory()
   const factoryId = factory?.id
 
   const { lines, isLoading: ll } = useLinesData(factoryId)
   const { plans: productionPlans, isLoading: pl } = useProductionPlansData(factoryId)
   const { production: hourlyData, isLoading: hl } = useTodayProductionByLine(factoryId)
 
-  const isLoading = !factoryId || ll || pl || hl
-
-  // ── KPI Calculations ──────────────────────────────────────────────────────
+  const isLoading = !mounted || !factoryId || ll || pl || hl
+  
+  if (!mounted) return null
+  if (isLoading) {
+    return (
+      <AppLayout>
+        <PageContainer>
+          <div className="flex items-center justify-center h-64">
+            <div className="text-center">
+              <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+              <p className="text-sm text-gray-600">Loading production data...</p>
+            </div>
+          </div>
+        </PageContainer>
+      </AppLayout>
+    )
+  }
+  
   const totalProduced   = hourlyData.reduce((s, h: any) => s + (h.produced_qty || 0), 0)
   const totalPassed     = hourlyData.reduce((s, h: any) => s + (h.passed_qty   || 0), 0)
   const totalDefect     = hourlyData.reduce((s, h: any) => s + (h.defect_qty   || 0), 0)
@@ -80,21 +83,6 @@ export default function DashboardPage() {
     line: l.line_code,
     eff: parseFloat((l.efficiency || 75).toFixed(1)),
   }))
-
-  if (isLoading) {
-    return (
-      <AppLayout>
-        <PageContainer>
-          <div className="flex items-center justify-center h-64">
-            <div className="text-center">
-              <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-              <p className="text-sm text-muted-foreground">Loading factory data...</p>
-            </div>
-          </div>
-        </PageContainer>
-      </AppLayout>
-    )
-  }
 
   return (
     <AppLayout>
