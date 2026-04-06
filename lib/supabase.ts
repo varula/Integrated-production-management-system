@@ -1,7 +1,6 @@
 // Google Sheets Database Client
 // Replaces Supabase with Google Sheets API for data storage
-
-import fetch from 'node-fetch'
+// Using native fetch (no node-fetch dependency) for Node.js 18+ compatibility
 
 const SHEET_ID = process.env.NEXT_PUBLIC_GOOGLE_SHEETS_ID
 const API_KEY = process.env.GOOGLE_SHEETS_API_KEY
