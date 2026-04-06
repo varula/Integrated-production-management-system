@@ -1,7 +1,6 @@
 'use client'
 
 import { createContext, useContext, useState, ReactNode, useEffect } from 'react'
-import { supabase } from './supabase'
 
 export interface Factory {
   id: string
@@ -49,27 +48,15 @@ export function FactoryProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const loadFactories = async () => {
       try {
-        const { data, error } = await supabase
-          .from('factories')
-          .select('*')
-          .order('code')
+        // Use default factories - Supabase data loading moved to server actions
+        const defaults = [
+          { id: 'f1', code: 'AA', name: 'Armana Apparels / Fashions Ltd', location: 'Tejgaon Industrial Area, Dhaka' },
+          { id: 'f2', code: 'ZA', name: 'Zyta Apparels Ltd', location: 'Mirpur, Dhaka' },
+          { id: 'f3', code: 'DE', name: 'Denimach Ltd', location: 'Sreepur, Gazipur' },
+          { id: 'f4', code: 'DT', name: 'Denitex Ltd', location: 'Savar, Dhaka' },
+        ]
 
-        if (error) {
-          console.error('[v0] Supabase error:', error)
-          // Fallback to default factories if Supabase fails
-          const defaults = [
-            { id: 'f1', code: 'AA', name: 'Armana Apparels / Fashions Ltd', location: 'Tejgaon Industrial Area, Dhaka' },
-            { id: 'f2', code: 'ZA', name: 'Zyta Apparels Ltd', location: 'Mirpur, Dhaka' },
-            { id: 'f3', code: 'DE', name: 'Denimach Ltd', location: 'Sreepur, Gazipur' },
-            { id: 'f4', code: 'DT', name: 'Denitex Ltd', location: 'Savar, Dhaka' },
-          ]
-          setFactories(createFactoriesWithUI(defaults))
-          if (defaults.length > 0) setSelectedFactory(createFactoriesWithUI(defaults)[0])
-          setLoading(false)
-          return
-        }
-
-        const factoriesWithUI = createFactoriesWithUI(data || [])
+        const factoriesWithUI = createFactoriesWithUI(defaults)
         setFactories(factoriesWithUI)
         
         // Set first factory as default

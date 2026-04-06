@@ -1,20 +1,12 @@
-// Google Sheets Database Client
-// Replaces Supabase with Google Sheets API for data storage
-// Using native fetch (no node-fetch dependency) for Node.js 18+ compatibility
+'use server'
+
+// Google Sheets Database Client - Server-only
+// This file runs ONLY on the server and makes Google Sheets API calls
 
 const SHEET_ID = process.env.NEXT_PUBLIC_GOOGLE_SHEETS_ID
 const API_KEY = process.env.GOOGLE_SHEETS_API_KEY
 
 const SHEETS_API = 'https://sheets.googleapis.com/v4/spreadsheets'
-
-// Sheet names (tabs in the Google Sheet)
-const SHEETS = {
-  factories: 'factories',
-  lines: 'lines',
-  production_plans: 'production_plans',
-  hourly_production: 'hourly_production',
-  downtime: 'downtime',
-}
 
 // Fetch sheet data from Google Sheets API
 async function getSheetData(sheetName: string, range: string = 'A:Z') {
