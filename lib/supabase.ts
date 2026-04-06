@@ -1,19 +1,50 @@
 'use server'
 
-// Google Sheets Database Client - Server-only
-// This file runs ONLY on the server and makes Google Sheets API calls
+// Google Sheets Database Client - Pure server-only, no dependencies
+// Uses only native Node.js fetch (available in 18.0+)
 
 const SHEET_ID = process.env.NEXT_PUBLIC_GOOGLE_SHEETS_ID
 const API_KEY = process.env.GOOGLE_SHEETS_API_KEY
-
 const SHEETS_API = 'https://sheets.googleapis.com/v4/spreadsheets'
 
-// Fetch sheet data from Google Sheets API
-async function getSheetData(sheetName: string, range: string = 'A:Z') {
+export async function getSheetData(sheetName: string) {
   if (!SHEET_ID || !API_KEY) {
     console.error('[v0] Missing Google Sheets credentials')
-    return { data: null, error: 'Missing Sheet ID or API Key' }
+    return []
   }
+
+  try {
+    const url = `${SHEETS_API}/${SHEET_ID}/values/${sheetName}!A:Z?key=${API_KEY}`
+    const response = await fetch(url, { cache: 'no-store' })
+    
+    if (!response.ok) {
+      console.error('[v0] Sheet fetch error:', response.status)
+      return []
+    }
+
+    const result = (await response.json()) as any
+    const rows = result.values || []
+    
+    if (rows.length === 0) return []
+
+    const headers = rows[0]
+    return rows.slice(1).map((row: any[]) => {
+      const obj: any = {}
+      headers.forEach((header: string, i: number) => {
+        obj[header] = row[i] ?? null
+      })
+      return obj
+    })
+  } catch (error) {
+    console.error('[v0] Sheet error:', error)
+    return []
+  }
+}
+
+export async function getSheetDataFiltered(sheetName: string, factoryId: string) {
+  const data = await getSheetData(sheetName)
+  return data.filter((row: any) => row.factory_id === factoryId)
+}
 
   try {
     const url = `${SHEETS_API}/${SHEET_ID}/values/${sheetName}!${range}?key=${API_KEY}`
