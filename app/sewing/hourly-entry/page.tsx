@@ -5,7 +5,6 @@ import { AppLayout } from "@/components/app-layout"
 import { PageContainer, SectionHeader } from "@/components/shared"
 import { useFactory } from "@/lib/factory-context"
 import { useLinesData, useProductionPlansData } from "@/hooks/useProductionData"
-import { supabase } from "@/lib/supabase"
 import { Plus, Save, AlertCircle } from "lucide-react"
 
 const HOURS = [

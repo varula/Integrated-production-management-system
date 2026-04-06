@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react'
 import { useAuth } from '@/lib/auth-context'
-import { supabase } from '@/lib/supabase'
 import { AppLayout } from '@/components/app-layout'
 import { PageContainer, SectionHeader } from '@/components/shared'
 

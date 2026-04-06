@@ -1,5 +1,3 @@
-import { supabase } from './supabase'
-
 export type AuditAction = 'CREATE' | 'READ' | 'UPDATE' | 'DELETE' | 'LOGIN' | 'LOGOUT'
 
 export interface AuditLog {
@@ -14,15 +12,8 @@ export interface AuditLog {
 
 export async function logAudit(log: AuditLog, ip_address?: string, user_agent?: string) {
   try {
-    const { error } = await supabase.from('audit_logs').insert({
-      ...log,
-      ip_address: ip_address || 'N/A',
-      user_agent: user_agent || navigator.userAgent,
-    })
-    
-    if (error) {
-      console.error('[v0] Audit logging error:', error)
-    }
+    // Demo mode - log to console instead of database
+    console.log('[v0] Audit:', { ...log, ip_address, user_agent })
   } catch (err) {
     console.error('[v0] Audit log failed:', err)
   }

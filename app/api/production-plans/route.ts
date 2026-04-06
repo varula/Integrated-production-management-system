@@ -1,23 +1,8 @@
 'use server'
 
-import { supabase } from '@/lib/supabase'
-import { logCreate, logUpdate, logDelete } from '@/lib/audit'
 import { NextRequest, NextResponse } from 'next/server'
 
-// Helper to get current user
-async function getCurrentUser(request: NextRequest) {
-  const token = request.headers.get('Authorization')?.split(' ')[1]
-  if (!token) return null
-  
-  try {
-    const { data: { user } } = await supabase.auth.getUser(token)
-    return user
-  } catch {
-    return null
-  }
-}
-
-// POST: Create new production plan
+// Demo mode API - return mock data
 export async function POST(request: NextRequest) {
   try {
     const user = await getCurrentUser(request)

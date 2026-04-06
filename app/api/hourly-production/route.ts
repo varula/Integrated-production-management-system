@@ -1,13 +1,17 @@
 'use server'
 
-import { supabase } from '@/lib/supabase'
 import { NextRequest, NextResponse } from 'next/server'
 
-// POST: Create hourly production record
+// POST: Create hourly production record (demo mode)
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { factory_id, line_id, production_plan_id, hour_index, hour_slot, produced_qty, passed_qty, defect_qty, date } = body
+    // In demo mode, just return success
+    return NextResponse.json({ data: { ...body, id: Date.now() }, error: null })
+  } catch (error) {
+    return NextResponse.json({ error: 'Failed to create production record' }, { status: 500 })
+  }
+}
 
     if (!factory_id || !line_id || hour_index === undefined) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })

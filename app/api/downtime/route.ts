@@ -1,13 +1,17 @@
 'use server'
 
-import { supabase } from '@/lib/supabase'
 import { NextRequest, NextResponse } from 'next/server'
 
-// POST: Create downtime record
+// POST: Create downtime record (demo mode)
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { factory_id, line_id, reason, start_time, end_time, duration_minutes, created_by } = body
+    // In demo mode, just return success
+    return NextResponse.json({ data: { ...body, id: Date.now() }, error: null })
+  } catch (error) {
+    return NextResponse.json({ error: 'Failed to create downtime record' }, { status: 500 })
+  }
+}
 
     if (!factory_id || !line_id || !reason) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
