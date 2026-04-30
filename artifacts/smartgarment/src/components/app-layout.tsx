@@ -240,7 +240,7 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
           <Factory size={20} className="text-white" />
         </div>
         <div className="min-w-0">
-          <p className="text-sidebar-foreground font-bold text-sm leading-tight truncate">FlowBoard</p>
+          <p className="text-sidebar-foreground font-bold text-sm leading-tight truncate">Tracker</p>
           <p className="text-sidebar-foreground/50 text-xs truncate">Track. Analyze. Improve.</p>
         </div>
       </div>
@@ -377,7 +377,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
               <Menu size={20} />
             </button>
             <div className="flex-1 min-w-0">
-              <h1 className="text-sm font-semibold text-foreground">{currentPage?.label ?? "FlowBoard"}</h1>
+              <h1 className="text-sm font-semibold text-foreground">{currentPage?.label ?? "Tracker"}</h1>
               <p className="text-xs text-muted-foreground">{selectedFactory?.location}</p>
             </div>
           </div>
