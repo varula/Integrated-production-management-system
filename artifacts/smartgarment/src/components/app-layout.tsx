@@ -368,23 +368,23 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       )}
 
       <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
-        <header className="shrink-0 border-b border-border bg-card px-4 py-3 flex items-center justify-between gap-4">
+        <header className="shrink-0 border-b border-border bg-card px-6 py-4 flex items-center justify-between gap-4 shadow-sm">
           <div className="flex items-center gap-3 flex-1">
             <button
               onClick={() => setSidebarOpen(true)}
               className="lg:hidden p-1.5 rounded-md hover:bg-muted transition-colors"
             >
-              <Menu size={20} />
+              <Menu size={22} />
             </button>
             <div className="flex-1 min-w-0">
-              <h1 className="text-sm font-semibold text-foreground">{currentPage?.label ?? "Tracker - Armana"}</h1>
+              <h1 className="text-xl font-bold text-foreground tracking-tight">{currentPage?.label ?? "Tracker - Armana"}</h1>
             </div>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
             <LiveClock />
             <button className="relative p-2 rounded-full hover:bg-muted transition-colors">
-              <Bell size={18} />
-              <span className="absolute top-1 right-1 w-2 h-2 bg-destructive rounded-full" />
+              <Bell size={20} />
+              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-destructive rounded-full" />
             </button>
           </div>
         </header>
