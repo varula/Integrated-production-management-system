@@ -378,7 +378,6 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             </button>
             <div className="flex-1 min-w-0">
               <h1 className="text-sm font-semibold text-foreground">{currentPage?.label ?? "Tracker - Armana"}</h1>
-              <p className="text-xs text-muted-foreground">{selectedFactory?.location}</p>
             </div>
           </div>
           <div className="flex items-center gap-3">
