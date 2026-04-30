@@ -1,0 +1,8 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "RS2nPcNIeM1_ibm71p428"
+uri = "file://artifacts/smartgarment-promo/public/images/tech-grid.png"
+type = "image"
+title = "dark tech grid pattern"

@@ -1,0 +1,31 @@
+kind = "video"
+previewPath = "/smartgarment-promo/"
+title = "SmartGarment Promo Video"
+version = "1.0.0"
+id = "artifacts/smartgarment-promo"
+router = "path"
+
+[[integratedSkills]]
+name = "video-js"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/smartgarment-promo/" ]
+localPort = 20340
+
+[services.development]
+run = "pnpm --filter @workspace/smartgarment-promo run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/smartgarment-promo", "run", "build" ]
+publicDir = "artifacts/smartgarment-promo/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "20340"
+BASE_PATH = "/smartgarment-promo/"
